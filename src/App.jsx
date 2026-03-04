@@ -18,7 +18,9 @@ import { SearchPage } from './features/products/SearchPage';
 import { CheckoutPage } from './features/checkout/CheckoutPage';
 import { OrdersPage } from './features/orders/OrdersPage';
 import { Navbar } from './components/ui/Navbar';
+import { Footer } from './components/ui/Footer';
 import { CartDrawer } from './components/ecommerce/CartDrawer';
+import { WhatsAppButton } from './components/ui/WhatsAppButton';
 import { ROUTES } from './constants/routes';
 
 // Global layout wrapper with Navbar and CartDrawer
@@ -28,7 +30,9 @@ const DefaultLayout = ({ children }) => (
     <main className="flex-1 shrink-0 bg-[#FAF8F5]">
       {children}
     </main>
+    <Footer />
     <CartDrawer />
+    <WhatsAppButton />
     {/* Global Toast Container */}
     <Toaster 
       position="bottom-right" 
@@ -74,8 +78,8 @@ function App() {
               } 
             />
           </Routes>
-        </DefaultLayout>
-      </BrowserRouter>
+          </DefaultLayout>
+        </BrowserRouter>
     </AuthProvider>
   );
 }

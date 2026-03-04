@@ -40,7 +40,7 @@ export const SearchPage = () => {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 bg-[#FAF8F5] min-h-screen">
       <div className="border-b border-gray-200 pb-10 pt-10 text-center">
-        <h1 className="text-4xl font-serif font-bold tracking-tight text-[#1A1A1A]">
+        <h1 className="text-4xl font-serif font-light tracking-widest text-[#1A1A1A]">
           Search Products
         </h1>
         <div className="mx-auto mt-6 max-w-xl">

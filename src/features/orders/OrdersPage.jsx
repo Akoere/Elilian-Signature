@@ -39,7 +39,7 @@ export const OrdersPage = () => {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 bg-[#FAF8F5] min-h-screen">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-serif font-bold tracking-tight text-[#1A1A1A] mb-8">
+        <h1 className="text-3xl font-serif font-light tracking-widest text-[#1A1A1A] mb-8">
           Order History
         </h1>
 

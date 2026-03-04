@@ -48,7 +48,7 @@ export const shopifyFetch = async (query, variables = {}) => {
     
     return data;
   } catch (error) {
-    console.error('Shopify Fetch Error:', error);
-    throw error;
+    console.error('Shopify Fetch Error Full Origin:', JSON.stringify(error, null, 2), error);
+    throw new Error(`GraphQL Client: ${error.message} - ${JSON.stringify(error)}`);
   }
 };

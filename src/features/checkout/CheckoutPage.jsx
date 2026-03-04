@@ -49,7 +49,7 @@ export const CheckoutPage = () => {
         user_id: user.id,
         total_amount: Math.round(cartTotal() * 100),
         currency: 'NGN',
-        payment_provider: provider,
+        payment_provider: 'paystack',
         payment_intent_id: response.reference || response.id || 'manual_test_ref',
         shipping_address: shippingInfo,
         items: items.map(item => ({
