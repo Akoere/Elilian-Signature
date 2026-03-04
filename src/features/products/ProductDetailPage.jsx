@@ -11,6 +11,7 @@ import { toast } from 'react-hot-toast';
 import { getProductByHandle } from '../../services/shopify/productsService';
 import { formatPrice } from '../../utils/formatPrice';
 import { Button } from '../../components/ui/Button';
+import { LogoLoader } from '../../components/ui/LogoLoader';
 import { useCart } from '../cart/useCart';
 
 export const ProductDetailPage = () => {
@@ -25,11 +26,7 @@ export const ProductDetailPage = () => {
   });
 
   if (isLoading) {
-    return (
-      <div className="flex h-[80vh] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-[#1B1F3B]"></div>
-      </div>
-    );
+    return <LogoLoader />;
   }
 
   if (error || !product) {

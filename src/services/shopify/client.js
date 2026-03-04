@@ -48,7 +48,16 @@ export const shopifyFetch = async (query, variables = {}) => {
     
     return data;
   } catch (error) {
-    console.error('Shopify Fetch Error Full Origin:', JSON.stringify(error, null, 2), error);
-    throw new Error(`GraphQL Client: ${error.message} - ${JSON.stringify(error)}`);
+    // Surface the actual HTTP status and response details
+    const status = error?.response?.status || error?.status || 'unknown';
+    const statusText = error?.response?.statusText || '';
+    const errorBody = error?.response?.body || error?.body || '';
+    console.error(`Shopify Fetch Error [HTTP ${status} ${statusText}]:`, error.message);
+    console.error('Error details:', { status, statusText, errorBody, fullError: error });
+    
+    const detail = status !== 'unknown' 
+      ? `HTTP ${status} ${statusText}`.trim()
+      : error.message || 'Unknown error';
+    throw new Error(`Shopify API Error: ${detail}. Check your Storefront Access Token and store domain.`);
   }
 };

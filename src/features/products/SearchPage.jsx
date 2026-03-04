@@ -11,6 +11,7 @@ import { searchProducts } from '../../services/shopify/searchService';
 import { ProductCard } from '../../components/ecommerce/ProductCard';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
+import { LogoLoader } from '../../components/ui/LogoLoader';
 
 export const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -59,9 +60,7 @@ export const SearchPage = () => {
 
       <div className="pt-12 pb-24">
         {isLoading && (
-           <div className="flex justify-center my-10">
-             <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#1B1F3B]"></div>
-           </div>
+          <LogoLoader size="sm" />
         )}
 
         {error && (

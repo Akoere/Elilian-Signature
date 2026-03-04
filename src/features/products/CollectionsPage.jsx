@@ -9,6 +9,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getCollectionByHandle } from '../../services/shopify/collectionsService';
 import { ProductCard } from '../../components/ecommerce/ProductCard';
+import { LogoLoader } from '../../components/ui/LogoLoader';
 
 export const CollectionsPage = () => {
   const { collection } = useParams();
@@ -20,11 +21,7 @@ export const CollectionsPage = () => {
   });
 
   if (isLoading) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center bg-[#FAF8F5]">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#1B1F3B]"></div>
-      </div>
-    );
+    return <LogoLoader />;
   }
 
   if (error || !collectionData) {
