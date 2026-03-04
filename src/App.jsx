@@ -15,6 +15,7 @@ import { ProductsPage } from './features/products/ProductsPage';
 import { ProductDetailPage } from './features/products/ProductDetailPage';
 import { CollectionsPage } from './features/products/CollectionsPage';
 import { SearchPage } from './features/products/SearchPage';
+import { WishlistPage } from './features/wishlist/WishlistPage';
 import { CheckoutPage } from './features/checkout/CheckoutPage';
 import { OrdersPage } from './features/orders/OrdersPage';
 import { Navbar } from './components/ui/Navbar';
@@ -56,6 +57,7 @@ function App() {
             <Route path={ROUTES.HOME} element={<ProductsPage />} />
             <Route path={ROUTES.SEARCH} element={<SearchPage />} />
             <Route path={ROUTES.COLLECTIONS} element={<CollectionsPage />} />
+            <Route path={ROUTES.WISHLIST} element={<WishlistPage />} />
             <Route path={ROUTES.PRODUCT_DETAIL} element={<ProductDetailPage />} />
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
             <Route path={ROUTES.SIGNUP} element={<SignupPage />} />

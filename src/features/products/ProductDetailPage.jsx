@@ -13,11 +13,13 @@ import { formatPrice } from '../../utils/formatPrice';
 import { Button } from '../../components/ui/Button';
 import { LogoLoader } from '../../components/ui/LogoLoader';
 import { useCart } from '../cart/useCart';
+import { useWishlist } from '../wishlist/useWishlist';
 
 export const ProductDetailPage = () => {
   const { handle } = useParams();
   const [selectedImage, setSelectedImage] = useState(0);
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   const { data: product, isLoading, error } = useQuery({
     queryKey: ['product', handle],
@@ -108,7 +110,7 @@ export const ProductDetailPage = () => {
               />
             </div>
 
-            <div className="mt-10 flex">
+            <div className="mt-10 flex gap-4">
               <Button 
                 size="lg" 
                 className="max-w-xs w-full"
@@ -117,6 +119,19 @@ export const ProductDetailPage = () => {
               >
                 {initialVariant?.availableForSale ? 'Add to cart' : 'Out of stock'}
               </Button>
+              <button
+                onClick={() => toggleWishlist(product)}
+                className="flex items-center justify-center rounded-md p-3 text-gray-400 hover:bg-gray-100 hover:text-[#C0522C] transition-colors border border-gray-200"
+                aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
+              >
+                <svg 
+                  className={`h-6 w-6 transition-colors ${isInWishlist(product.id) ? 'fill-[#C0522C] text-[#C0522C]' : 'fill-transparent'}`} 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>

@@ -13,8 +13,20 @@ import { LogoLoader } from '../../components/ui/LogoLoader';
 export const ProductsPage = () => {
   const { data: products, isLoading, error } = useQuery({
     queryKey: ['products'],
-    queryFn: () => getProducts({ first: 24 }),
+    queryFn: async () => {
+      console.log('Fetching products...');
+      try {
+        const res = await getProducts({ first: 24 });
+        console.log('Products fetched:', res?.length);
+        return res;
+      } catch (err) {
+        console.error('Fetch failed:', err);
+        throw err;
+      }
+    },
   });
+
+  console.log('ProductsPage render:', { isLoading, error, productsCount: products?.length });
 
   if (isLoading) {
     return <LogoLoader />;
@@ -41,7 +53,7 @@ export const ProductsPage = () => {
           <h2 className="text-2xl font-serif text-[#1B1F3B]">Featured Arrivals</h2>
         </div>
         
-        <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-6 lg:grid-cols-4 xl:gap-x-6">
           {products?.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

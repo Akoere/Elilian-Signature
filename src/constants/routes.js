@@ -10,6 +10,7 @@ export const ROUTES = {
   SEARCH: '/search',
   COLLECTIONS: '/search/:collection',
   PRODUCT_DETAIL: '/product/:handle',
+  WISHLIST: '/wishlist',
   CART: '/cart',
   CHECKOUT: '/checkout',
   ORDERS: '/orders',
