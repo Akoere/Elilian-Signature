@@ -22,6 +22,18 @@
     font-weight: 300;
     letter-spacing: 0.08em;
   }
+
+  /* Prevent auto-zoom on iOS Safari for inputs */
+  @media screen and (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+  }
+
+  /* Prevent double-tap to zoom on interactive elements */
+  a, button, input, select, textarea, label {
+    touch-action: manipulation;
+  }
 }
 
 /* Custom scrollbar for better aesthetics */
