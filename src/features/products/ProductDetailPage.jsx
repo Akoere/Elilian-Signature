@@ -60,7 +60,7 @@ export const ProductDetailPage = () => {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="lg:grid lg:grid-cols-2 lg:gap-x-8 lg:items-start text-left">
           {/* Image gallery */}
-          <div className="flex flex-col-reverse">
+          <div className="flex flex-col-reverse lg:max-w-md lg:mx-auto w-full">
             <div className="mx-auto mt-6 hidden w-full max-w-2xl sm:block lg:max-w-none">
               <div className="grid grid-cols-4 gap-6">
                 {images?.map((image, idx) => (
@@ -82,7 +82,7 @@ export const ProductDetailPage = () => {
                 <img
                   src={images[selectedImage].url}
                   alt={images[selectedImage].altText || title}
-                  className="h-full w-full object-cover object-center sm:rounded-lg"
+                  className="h-full w-full object-contain object-center sm:rounded-lg"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-gray-400">
