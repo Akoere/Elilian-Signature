@@ -12,15 +12,17 @@ import { ProductCard } from '../../components/ecommerce/ProductCard';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { LogoLoader } from '../../components/ui/LogoLoader';
+import { ProductFilter, parseSortOption } from './ProductFilter';
 
 export const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
+  const initialSort = searchParams.get('sort') || '';
   const [searchInputValue, setSearchInputValue] = useState(initialQuery);
 
   const { data: searchResults, isLoading, error } = useQuery({
-    queryKey: ['search', initialQuery],
-    queryFn: () => searchProducts(initialQuery),
+    queryKey: ['search', initialQuery, initialSort],
+    queryFn: () => searchProducts(initialQuery, { first: 20, ...parseSortOption(initialSort) }),
     enabled: initialQuery.trim().length > 0,
   });
 
@@ -32,10 +34,22 @@ export const SearchPage = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchInputValue.trim()) {
-      setSearchParams({ q: searchInputValue.trim() });
+      setSearchParams({ q: searchInputValue.trim(), sort: initialSort });
     } else {
       setSearchParams({});
     }
+  };
+
+  const handleSortChange = (newSort) => {
+    setSearchParams(prev => {
+      const newParams = new URLSearchParams(prev);
+      if (newSort) {
+        newParams.set('sort', newSort);
+      } else {
+        newParams.delete('sort');
+      }
+      return newParams;
+    });
   };
 
   return (
@@ -45,7 +59,7 @@ export const SearchPage = () => {
           Search Products
         </h1>
         <div className="mx-auto mt-6 max-w-xl">
-          <form onSubmit={handleSearch} className="flex gap-2">
+          <form onSubmit={handleSearch} className="flex gap-2 mb-6">
             <Input
               type="search"
               placeholder="Search for handmade items, dresses, bags..."
@@ -55,6 +69,9 @@ export const SearchPage = () => {
             />
             <Button type="submit">Search</Button>
           </form>
+          {initialQuery && (
+            <ProductFilter currentSort={initialSort} onSortChange={handleSortChange} />
+          )}
         </div>
       </div>
 

@@ -25,12 +25,12 @@ const COLLECTIONS_QUERY = `
 `;
 
 const COLLECTION_BY_HANDLE_QUERY = `
-  query getCollectionByHandle($handle: String!, $first: Int!) {
+  query getCollectionByHandle($handle: String!, $first: Int!, $sortKey: ProductCollectionSortKeys, $reverse: Boolean) {
     collection(handle: $handle) {
       id
       title
       description
-      products(first: $first) {
+      products(first: $first, sortKey: $sortKey, reverse: $reverse) {
         edges {
           node {
             id
@@ -79,7 +79,10 @@ export const getCollections = async (first = 20) => {
  * Fetches a specific collection by handle with its products.
  *
  * @param {string} handle - Collection handle
- * @param {number} first - Number of products to fetch
+ * @param {Object} options - Query configuration
+ * @param {number} options.first - Number of products to fetch
+ * @param {string|null} options.sortKey - Shopify ProductCollectionSortKeys
+ * @param {boolean} options.reverse - Sort direction
  * @returns {Promise<Object|null>} Collection object or null
  *
  * Side Effects:
@@ -88,8 +91,12 @@ export const getCollections = async (first = 20) => {
  * Edge Cases:
  * - Collection not found
  */
-export const getCollectionByHandle = async (handle, first = 50) => {
-  const data = await shopifyFetch(COLLECTION_BY_HANDLE_QUERY, { handle, first });
+export const getCollectionByHandle = async (handle, { first = 50, sortKey = null, reverse = false } = {}) => {
+  const variables = { handle, first };
+  if (sortKey) variables.sortKey = sortKey;
+  if (reverse) variables.reverse = reverse;
+
+  const data = await shopifyFetch(COLLECTION_BY_HANDLE_QUERY, variables);
   if (!data.collection) return null;
   
   return {

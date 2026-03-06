@@ -23,9 +23,31 @@
  * - Paystack script not loaded
  * - Invalid configuration
  */
-export const initPaystackPayment = ({ email, amount, metadata, onSuccess, onClose }) => {
+const loadPaystackScript = () => {
+  return new Promise((resolve, reject) => {
+    if (window.PaystackPop) {
+      resolve(true);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://js.paystack.co/v1/inline.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => reject(new Error('Failed to load Paystack script'));
+    document.body.appendChild(script);
+  });
+};
+
+export const initPaystackPayment = async ({ email, amount, metadata, onSuccess, onClose }) => {
+  try {
+    await loadPaystackScript();
+  } catch (error) {
+    throw new Error('Paystack script is not loaded in the document. Please check your internet connection or disable adblockers.');
+  }
+
   if (!window.PaystackPop) {
-    throw new Error('Paystack script is not loaded in the document.');
+    throw new Error('Paystack pop initialization failed.');
   }
 
   const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;

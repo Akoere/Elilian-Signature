@@ -45,35 +45,40 @@ export const CheckoutPage = () => {
 
   const handleSuccess = async (response) => {
     try {
-      const orderData = {
-        user_id: user.id,
-        total_amount: Math.round(cartTotal() * 100),
-        currency: 'NGN',
-        payment_provider: 'paystack',
-        payment_intent_id: response.reference || response.id || 'manual_test_ref',
-        shipping_address: shippingInfo,
-        items: items.map(item => ({
-          product_id: item.product.id,
-          variant_id: item.variant.id,
-          title: item.product.title,
-          quantity: item.quantity,
-          price: item.variant.price.amount
-        }))
-      };
-
-      await createOrder(orderData);
+      // If the user is logged in, save the order to their account history in Supabase
+      if (user?.id) {
+        const orderData = {
+          user_id: user.id,
+          total_amount: Math.round(cartTotal() * 100),
+          currency: 'NGN',
+          payment_provider: 'paystack',
+          payment_intent_id: response.reference || response.id || 'manual_test_ref',
+          shipping_address: shippingInfo,
+          items: items.map(item => ({
+            product_id: item.product.id,
+            variant_id: item.variant.id,
+            title: item.product.title,
+            quantity: item.quantity,
+            price: item.variant.price.amount
+          }))
+        };
+        await createOrder(orderData);
+      }
+      
       clearCart();
-      toast.success('Payment successful! Order confirmed.');
-      navigate(ROUTES.ORDERS);
+      toast.success('Payment successful! Your order has been placed.');
+      
+      // Guests go to home, logged-in users go to their orders page
+      navigate(user?.id ? ROUTES.ORDERS : ROUTES.HOME);
     } catch (error) {
       console.error('Order Creation Error:', error);
-      toast.error('Payment succeeded but order creation failed. Please contact support.');
+      toast.error('Payment succeeded but there was an issue linking it to your account. Please contact support.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!shippingInfo.address || !shippingInfo.city || !shippingInfo.phone) {
       return toast.error('Please fill in all shipping details');
@@ -85,7 +90,7 @@ export const CheckoutPage = () => {
       // Amount in kobo for NGN (multiply by 100)
       const amountInSmallestUnit = Math.round(cartTotal() * 100);
 
-      initPaystackPayment({
+      await initPaystackPayment({
         email: shippingInfo.email,
         amount: amountInSmallestUnit,
         metadata: {

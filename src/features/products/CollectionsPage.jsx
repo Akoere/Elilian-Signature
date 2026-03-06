@@ -5,20 +5,35 @@
  * Notes: Uses handle from params to fetch collection products.
  */
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getCollectionByHandle } from '../../services/shopify/collectionsService';
 import { ProductCard } from '../../components/ecommerce/ProductCard';
 import { LogoLoader } from '../../components/ui/LogoLoader';
+import { ProductFilter, parseSortOption } from './ProductFilter';
 
 export const CollectionsPage = () => {
   const { collection } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialSort = searchParams.get('sort') || '';
 
   const { data: collectionData, isLoading, error } = useQuery({
-    queryKey: ['collection', collection],
-    queryFn: () => getCollectionByHandle(collection),
+    queryKey: ['collection', collection, initialSort],
+    queryFn: () => getCollectionByHandle(collection, { first: 50, ...parseSortOption(initialSort) }),
     enabled: !!collection,
   });
+
+  const handleSortChange = (newSort) => {
+    setSearchParams(prev => {
+      const newParams = new URLSearchParams(prev);
+      if (newSort) {
+        newParams.set('sort', newSort);
+      } else {
+        newParams.delete('sort');
+      }
+      return newParams;
+    });
+  };
 
   if (isLoading) {
     return <LogoLoader />;
@@ -43,6 +58,12 @@ export const CollectionsPage = () => {
           <p className="mx-auto mt-4 max-w-2xl text-base text-gray-500">
             {collectionData.description}
           </p>
+        )}
+      </div>
+
+      <div className="pt-8 mb-4">
+        {collectionData.products?.length > 0 && (
+          <ProductFilter currentSort={initialSort} onSortChange={handleSortChange} />
         )}
       </div>
 

@@ -7,8 +7,8 @@
 import { shopifyFetch } from './client';
 
 const SEARCH_PRODUCTS_QUERY = `
-  query searchProducts($query: String!, $first: Int!) {
-    products(first: $first, query: $query) {
+  query searchProducts($query: String!, $first: Int!, $sortKey: ProductSortKeys, $reverse: Boolean) {
+    products(first: $first, query: $query, sortKey: $sortKey, reverse: $reverse) {
       edges {
         node {
           id
@@ -42,7 +42,10 @@ const SEARCH_PRODUCTS_QUERY = `
  * Searches for products matching a query string.
  *
  * @param {string} query - The search query term
- * @param {number} first - Number of results to fetch (default: 20)
+ * @param {Object} options - Search configuration
+ * @param {number} options.first - Number of results to fetch (default: 20)
+ * @param {string|null} options.sortKey - Shopify ProductSortKeys (e.g. 'PRICE')
+ * @param {boolean} options.reverse - Sort direction
  * @returns {Promise<Array>} Array of product nodes
  *
  * Side Effects:
@@ -51,10 +54,14 @@ const SEARCH_PRODUCTS_QUERY = `
  * Edge Cases:
  * - Empty query string returns empty array
  */
-export const searchProducts = async (query, first = 20) => {
+export const searchProducts = async (query, { first = 20, sortKey = null, reverse = false } = {}) => {
   if (!query || query.trim() === '') return [];
   
-  const data = await shopifyFetch(SEARCH_PRODUCTS_QUERY, { query, first });
+  const variables = { query, first };
+  if (sortKey) variables.sortKey = sortKey;
+  if (reverse) variables.reverse = reverse;
+
+  const data = await shopifyFetch(SEARCH_PRODUCTS_QUERY, variables);
   return data.products.edges.map(edge => ({
     ...edge.node,
     variants: edge.node.variants.edges.map(v => v.node),

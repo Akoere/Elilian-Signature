@@ -24,15 +24,20 @@ import { CartDrawer } from './components/ecommerce/CartDrawer';
 import { WhatsAppButton } from './components/ui/WhatsAppButton';
 import { ROUTES } from './constants/routes';
 
+import { WishlistSync } from './features/wishlist/WishlistSync';
+import { ScrollToTop } from './components/ui/ScrollToTop';
+
 // Global layout wrapper with Navbar and CartDrawer
 const DefaultLayout = ({ children }) => (
   <div className="min-h-screen flex flex-col font-sans text-[#1A1A1A]">
+    <ScrollToTop />
     <Navbar />
     <main className="flex-1 shrink-0 bg-[#FAF8F5]">
       {children}
     </main>
     <Footer />
     <CartDrawer />
+    <WishlistSync />
     <WhatsAppButton />
     {/* Global Toast Container */}
     <Toaster 
@@ -63,14 +68,8 @@ function App() {
             <Route path={ROUTES.SIGNUP} element={<SignupPage />} />
 
             {/* Protected Routes */}
-            <Route 
-              path={ROUTES.CHECKOUT} 
-              element={
-                <ProtectedRoute>
-                  <CheckoutPage />
-                </ProtectedRoute>
-              } 
-            />
+            <Route path={ROUTES.CHECKOUT} element={<CheckoutPage />} />
+            
             <Route 
               path={ROUTES.ORDERS} 
               element={

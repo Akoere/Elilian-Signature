@@ -61,29 +61,54 @@ export const ProductDetailPage = () => {
         <div className="lg:grid lg:grid-cols-2 lg:gap-x-8 lg:items-start text-left">
           {/* Image gallery */}
           <div className="flex flex-col-reverse lg:max-w-md lg:mx-auto w-full">
-            <div className="mx-auto mt-6 hidden w-full max-w-2xl sm:block lg:max-w-none">
-              <div className="grid grid-cols-4 gap-6">
+            <div className="mt-4 sm:mt-6 w-full max-w-2xl lg:max-w-none">
+              <div className="flex sm:grid sm:grid-cols-4 gap-3 sm:gap-6 overflow-x-auto pb-2 sm:pb-0 snap-x justify-start p-1">
                 {images?.map((image, idx) => (
                   <button
                     key={image.url}
                     onClick={() => setSelectedImage(idx)}
-                    className={`relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none ${selectedImage === idx ? 'ring-2 ring-offset-2 ring-[#C0522C]' : 'ring-1 ring-transparent border border-gray-200'}`}
+                    className={`relative flex-none w-20 sm:w-auto h-20 sm:h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none snap-start ${selectedImage === idx ? 'ring-2 ring-offset-2 ring-[#1A1A1A]' : 'ring-1 ring-transparent border border-gray-200'}`}
                   >
-                    <span className="absolute inset-0 overflow-hidden rounded-md">
-                      <img src={image.url} alt="" className="h-full w-full object-cover object-center" />
-                    </span>
+                    <img src={image.url} alt="" className="absolute inset-0 h-full w-full object-cover object-center rounded-md" />
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="aspect-4/5 w-full bg-gray-100 rounded-lg overflow-hidden border border-gray-100">
+            <div className="aspect-4/5 w-full bg-gray-100 rounded-lg overflow-hidden border border-gray-100 relative items-center justify-center flex touch-pan-y">
               {images?.[selectedImage] ? (
-                <img
-                  src={images[selectedImage].url}
-                  alt={images[selectedImage].altText || title}
-                  className="h-full w-full object-contain object-center sm:rounded-lg"
-                />
+                <div 
+                  className="w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing"
+                  draggable="false"
+                  onPointerDown={(e) => {
+                    const el = e.currentTarget;
+                    el.setPointerCapture(e.pointerId);
+                    el.dataset.startX = e.clientX;
+                  }}
+                  onPointerUp={(e) => {
+                    const startX = parseFloat(e.currentTarget.dataset.startX);
+                    const diff = e.clientX - startX;
+                    const el = e.currentTarget;
+                    el.releasePointerCapture(e.pointerId);
+                    
+                    if (Math.abs(diff) > 50) {
+                      if (diff > 0) {
+                        // Swiped right -> previous image
+                        setSelectedImage((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+                      } else {
+                        // Swiped left -> next image
+                        setSelectedImage((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+                      }
+                    }
+                  }}
+                >
+                  <img
+                    src={images[selectedImage].url}
+                    alt={images[selectedImage].altText || title}
+                    className="h-full w-full object-contain object-center sm:rounded-lg pointer-events-none select-none"
+                    draggable="false"
+                  />
+                </div>
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-gray-400">
                   No Image
