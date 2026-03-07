@@ -5,28 +5,26 @@
  * Notes: Uses React Query to fetch and cache Shopify products.
  */
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { getProducts } from '../../services/shopify/productsService';
 import { ProductCard } from '../../components/ecommerce/ProductCard';
 import { LogoLoader } from '../../components/ui/LogoLoader';
 
 export const ProductsPage = () => {
-  const { data: products, isLoading, error } = useQuery({
+  const { 
+    data, 
+    isLoading, 
+    error, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage 
+  } = useInfiniteQuery({
     queryKey: ['products'],
-    queryFn: async () => {
-      console.log('Fetching products...');
-      try {
-        const res = await getProducts({ first: 24 });
-        console.log('Products fetched:', res?.length);
-        return res;
-      } catch (err) {
-        console.error('Fetch failed:', err);
-        throw err;
-      }
-    },
+    queryFn: ({ pageParam = undefined }) => getProducts({ first: 12, after: pageParam }),
+    getNextPageParam: (lastPage) => lastPage.pageInfo.hasNextPage ? lastPage.cursor : undefined,
   });
 
-  console.log('ProductsPage render:', { isLoading, error, productsCount: products?.length });
+  const products = data?.pages.flatMap(page => page.products) || [];
 
   if (isLoading) {
     return <LogoLoader />;
@@ -62,6 +60,18 @@ export const ProductsPage = () => {
         {(!products || products.length === 0) && (
           <div className="text-center py-12 text-gray-500 bg-white rounded-lg border border-dashed border-gray-300">
             No products found in the store. Please check Shopify admin.
+          </div>
+        )}
+
+        {hasNextPage && (
+          <div className="mt-12 flex justify-center">
+            <button
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage}
+              className="px-8 py-3 bg-white border border-[#1A1A1A] text-[#1A1A1A] font-medium text-sm rounded-md hover:bg-[#1A1A1A] hover:text-white transition-colors disabled:opacity-50"
+            >
+              {isFetchingNextPage ? 'Loading more...' : 'Load More'}
+            </button>
           </div>
         )}
       </section>

@@ -25,12 +25,16 @@ const COLLECTIONS_QUERY = `
 `;
 
 const COLLECTION_BY_HANDLE_QUERY = `
-  query getCollectionByHandle($handle: String!, $first: Int!, $sortKey: ProductCollectionSortKeys, $reverse: Boolean) {
+  query getCollectionByHandle($handle: String!, $first: Int!, $after: String, $sortKey: ProductCollectionSortKeys, $reverse: Boolean) {
     collection(handle: $handle) {
       id
       title
       description
-      products(first: $first, sortKey: $sortKey, reverse: $reverse) {
+      products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
         edges {
           node {
             id
@@ -81,6 +85,7 @@ export const getCollections = async (first = 20) => {
  * @param {string} handle - Collection handle
  * @param {Object} options - Query configuration
  * @param {number} options.first - Number of products to fetch
+ * @param {string} [options.after] - Cursor to fetch products after
  * @param {string|null} options.sortKey - Shopify ProductCollectionSortKeys
  * @param {boolean} options.reverse - Sort direction
  * @returns {Promise<Object|null>} Collection object or null
@@ -91,8 +96,8 @@ export const getCollections = async (first = 20) => {
  * Edge Cases:
  * - Collection not found
  */
-export const getCollectionByHandle = async (handle, { first = 50, sortKey = null, reverse = false } = {}) => {
-  const variables = { handle, first };
+export const getCollectionByHandle = async (handle, { first = 12, after, sortKey = null, reverse = false } = {}) => {
+  const variables = { handle, first, after };
   if (sortKey) variables.sortKey = sortKey;
   if (reverse) variables.reverse = reverse;
 
@@ -105,6 +110,8 @@ export const getCollectionByHandle = async (handle, { first = 50, sortKey = null
       ...edge.node,
       variants: edge.node.variants.edges.map(v => v.node),
       images: edge.node.images.edges.map(i => i.node)
-    }))
+    })),
+    pageInfo: data.collection.products.pageInfo,
+    cursor: data.collection.products.pageInfo.endCursor
   };
 };

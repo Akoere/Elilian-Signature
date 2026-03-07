@@ -7,8 +7,12 @@
 import { shopifyFetch } from './client';
 
 const SEARCH_PRODUCTS_QUERY = `
-  query searchProducts($query: String!, $first: Int!, $sortKey: ProductSortKeys, $reverse: Boolean) {
-    products(first: $first, query: $query, sortKey: $sortKey, reverse: $reverse) {
+  query searchProducts($query: String!, $first: Int!, $after: String, $sortKey: ProductSortKeys, $reverse: Boolean) {
+    products(first: $first, query: $query, after: $after, sortKey: $sortKey, reverse: $reverse) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       edges {
         node {
           id
@@ -43,10 +47,11 @@ const SEARCH_PRODUCTS_QUERY = `
  *
  * @param {string} query - The search query term
  * @param {Object} options - Search configuration
- * @param {number} options.first - Number of results to fetch (default: 20)
+ * @param {number} options.first - Number of results to fetch
+ * @param {string} [options.after] - Cursor to fetch products after
  * @param {string|null} options.sortKey - Shopify ProductSortKeys (e.g. 'PRICE')
  * @param {boolean} options.reverse - Sort direction
- * @returns {Promise<Array>} Array of product nodes
+ * @returns {Promise<Object>} Object containing products array and pageInfo
  *
  * Side Effects:
  * - Network call to Shopify
@@ -54,17 +59,21 @@ const SEARCH_PRODUCTS_QUERY = `
  * Edge Cases:
  * - Empty query string returns empty array
  */
-export const searchProducts = async (query, { first = 20, sortKey = null, reverse = false } = {}) => {
+export const searchProducts = async (query, { first = 12, after, sortKey = null, reverse = false } = {}) => {
   if (!query || query.trim() === '') return [];
   
-  const variables = { query, first };
+  const variables = { query, first, after };
   if (sortKey) variables.sortKey = sortKey;
   if (reverse) variables.reverse = reverse;
 
   const data = await shopifyFetch(SEARCH_PRODUCTS_QUERY, variables);
-  return data.products.edges.map(edge => ({
-    ...edge.node,
-    variants: edge.node.variants.edges.map(v => v.node),
-    images: edge.node.images.edges.map(i => i.node)
-  }));
+  return {
+    products: data.products.edges.map(edge => ({
+      ...edge.node,
+      variants: edge.node.variants.edges.map(v => v.node),
+      images: edge.node.images.edges.map(i => i.node)
+    })),
+    pageInfo: data.products.pageInfo,
+    cursor: data.products.pageInfo.endCursor
+  };
 };

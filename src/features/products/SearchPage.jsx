@@ -6,7 +6,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { searchProducts } from '../../services/shopify/searchService';
 import { ProductCard } from '../../components/ecommerce/ProductCard';
 import { Input } from '../../components/ui/Input';
@@ -20,11 +20,21 @@ export const SearchPage = () => {
   const initialSort = searchParams.get('sort') || '';
   const [searchInputValue, setSearchInputValue] = useState(initialQuery);
 
-  const { data: searchResults, isLoading, error } = useQuery({
+  const { 
+    data: searchData, 
+    isLoading, 
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = useInfiniteQuery({
     queryKey: ['search', initialQuery, initialSort],
-    queryFn: () => searchProducts(initialQuery, { first: 20, ...parseSortOption(initialSort) }),
+    queryFn: ({ pageParam = undefined }) => searchProducts(initialQuery, { first: 12, after: pageParam, ...parseSortOption(initialSort) }),
+    getNextPageParam: (lastPage) => lastPage?.pageInfo?.hasNextPage ? lastPage.cursor : undefined,
     enabled: initialQuery.trim().length > 0,
   });
+
+  const searchResults = searchData?.pages.flatMap(page => page?.products || []) || [];
 
   // Sync state if URL changes externally
   useEffect(() => {
@@ -85,11 +95,25 @@ export const SearchPage = () => {
         )}
 
         {!isLoading && !error && searchResults && searchResults.length > 0 && (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-6 lg:grid-cols-4 xl:gap-x-6">
-            {searchResults.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-6 lg:grid-cols-4 xl:gap-x-6">
+              {searchResults.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+
+            {hasNextPage && (
+              <div className="mt-12 flex justify-center">
+                <button
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                  className="px-8 py-3 bg-white border border-[#1A1A1A] text-[#1A1A1A] font-medium text-sm rounded-md hover:bg-[#1A1A1A] hover:text-white transition-colors disabled:opacity-50"
+                >
+                  {isFetchingNextPage ? 'Loading more...' : 'Load More'}
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         {!isLoading && !error && searchResults && searchResults.length === 0 && initialQuery && (

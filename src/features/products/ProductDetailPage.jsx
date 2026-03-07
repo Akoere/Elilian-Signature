@@ -4,7 +4,7 @@
  * Dependencies: react-router-dom, react-query, productsService, formatPrice, Button
  * Notes: Uses Shopify product handle from URL to fetch info.
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
@@ -12,20 +12,30 @@ import { getProductByHandle } from '../../services/shopify/productsService';
 import { formatPrice } from '../../utils/formatPrice';
 import { Button } from '../../components/ui/Button';
 import { LogoLoader } from '../../components/ui/LogoLoader';
+import { RecentlyViewedCarousel } from '../../components/ecommerce/RecentlyViewedCarousel';
+import { ProductRecommendations } from '../../components/ecommerce/ProductRecommendations';
 import { useCart } from '../cart/useCart';
 import { useWishlist } from '../wishlist/useWishlist';
+import { useRecentlyViewed } from './useRecentlyViewed';
 
 export const ProductDetailPage = () => {
   const { handle } = useParams();
   const [selectedImage, setSelectedImage] = useState(0);
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { addRecentlyViewed } = useRecentlyViewed();
 
   const { data: product, isLoading, error } = useQuery({
     queryKey: ['product', handle],
     queryFn: () => getProductByHandle(handle),
     enabled: !!handle,
   });
+
+  useEffect(() => {
+    if (product) {
+      addRecentlyViewed(product);
+    }
+  }, [product, addRecentlyViewed]);
 
   if (isLoading) {
     return <LogoLoader />;
@@ -160,6 +170,9 @@ export const ProductDetailPage = () => {
             </div>
           </div>
         </div>
+
+        <ProductRecommendations productId={product.id} />
+        <RecentlyViewedCarousel currentProductId={product.id} />
       </div>
     </div>
   );
