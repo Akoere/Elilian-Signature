@@ -7,7 +7,7 @@
 import React from 'react';
 import { cn } from '../../utils/cn';
 
-export const Button = React.forwardRef(({ 
+export const Button = React.memo(React.forwardRef(({ 
   className, variant = 'primary', size = 'md', isLoading = false, children, disabled, ...props 
 }, ref) => {
   
@@ -40,5 +40,5 @@ export const Button = React.forwardRef(({
       {children}
     </button>
   );
-});
+}));
 Button.displayName = "Button";

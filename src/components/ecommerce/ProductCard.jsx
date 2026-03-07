@@ -4,13 +4,13 @@
  * Dependencies: react-router-dom, formatPrice
  * Notes: Stateless UI component.
  */
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { formatPrice } from '../../utils/formatPrice';
 import { useWishlist } from '../../features/wishlist/useWishlist';
 import { QuickViewModal } from './QuickViewModal';
 
-export const ProductCard = ({ product }) => {
+export const ProductCard = memo(({ product }) => {
   const { handle, title, variants, images } = product;
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
@@ -104,4 +104,6 @@ export const ProductCard = ({ product }) => {
       />
     </>
   );
-};
+});
+
+ProductCard.displayName = 'ProductCard';

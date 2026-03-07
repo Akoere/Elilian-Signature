@@ -23,7 +23,7 @@ const EyeOffIcon = () => (
   </svg>
 );
 
-export const Input = React.forwardRef(({ className, type, label, error, ...props }, ref) => {
+export const Input = React.memo(React.forwardRef(({ className, type, label, error, ...props }, ref) => {
   const id = props.id || props.name;
   const isPassword = type === 'password';
   const [showPassword, setShowPassword] = useState(false);
@@ -65,5 +65,5 @@ export const Input = React.forwardRef(({ className, type, label, error, ...props
       )}
     </div>
   );
-});
+}));
 Input.displayName = "Input";
