@@ -15,6 +15,7 @@ import { createOrder } from '../../services/supabase/ordersService';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { ROUTES } from '../../constants/routes';
+import { PaymentSuccessModal } from './PaymentSuccessModal';
 
 export const CheckoutPage = () => {
   const { user } = useAuth();
@@ -23,6 +24,8 @@ export const CheckoutPage = () => {
 
 
   const [loading, setLoading] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [shippingInfo, setShippingInfo] = useState({
     fullName: user?.user_metadata?.full_name || '',
     email: user?.email || '',
@@ -33,11 +36,11 @@ export const CheckoutPage = () => {
   });
 
   useEffect(() => {
-    if (items.length === 0) {
+    if (items.length === 0 && !paymentSuccess) {
       toast.error('Your cart is empty');
       navigate(ROUTES.HOME);
     }
-  }, [items, navigate]);
+  }, [items, navigate, paymentSuccess]);
 
   const handleInputChange = (e) => {
     setShippingInfo({ ...shippingInfo, [e.target.name]: e.target.value });
@@ -65,11 +68,10 @@ export const CheckoutPage = () => {
         await createOrder(orderData);
       }
       
+      setPaymentSuccess(true);
+      setShowSuccessModal(true);
       clearCart();
       toast.success('Payment successful! Your order has been placed.');
-      
-      // Guests go to home, logged-in users go to their orders page
-      navigate(user?.id ? ROUTES.ORDERS : ROUTES.HOME);
     } catch (error) {
       console.error('Order Creation Error:', error);
       toast.error('Payment succeeded but there was an issue linking it to your account. Please contact support.');
@@ -109,17 +111,24 @@ export const CheckoutPage = () => {
   };
 
 
-  if (items.length === 0) return null; // Let the useEffect redirect
+  if (items.length === 0 && !paymentSuccess) return null; // Let the useEffect redirect
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pt-16 pb-24 sm:px-6 lg:px-8 bg-[#FAF8F5]">
+    <>
+      <PaymentSuccessModal 
+        isOpen={showSuccessModal} 
+        hasUser={!!user?.id}
+        onClose={() => navigate(user?.id ? ROUTES.ORDERS : ROUTES.HOME)}
+        onContinue={() => navigate(ROUTES.HOME)}
+      />
+      <div className="mx-auto max-w-7xl px-4 pt-16 pb-24 sm:px-6 lg:px-8 bg-[#FAF8F5]">
       <div className="max-w-2xl mx-auto lg:max-w-none">
         <h1 className="sr-only">Checkout</h1>
 
         <form onSubmit={handleSubmit} className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
           <div>
             <div>
-              <h2 className="text-2xl font-serif font-bold text-[#1A1A1A]">Contact & Shipping Info</h2>
+              <h2 className="text-2xl font-serif text-[#1A1A1A]">Contact & Shipping Info</h2>
 
               <div className="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
                 <div className="sm:col-span-2">
@@ -144,16 +153,16 @@ export const CheckoutPage = () => {
               <div className="rounded-lg border border-[#C0522C]/30 bg-[#C0522C]/5 p-4">
                 <div className="flex items-center gap-3">
                   <svg className="h-5 w-5 text-[#C0522C]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                  <p className="text-sm font-medium text-gray-900">Paystack — Secure Payment</p>
+                  <p className="text-sm font-medium text-gray-900 font-sans">Paystack — Secure Payment</p>
                 </div>
-                <p className="mt-2 text-xs text-gray-500 ml-8">Pay via bank transfer, debit card, or USSD. Powered by Paystack.</p>
+                <p className="mt-2 text-xs text-gray-500 ml-8 font-sans">Pay via bank transfer, debit card, or USSD. Powered by Paystack.</p>
               </div>
             </div>
           </div>
 
           {/* Order Summary Sidebar */}
           <div className="mt-10 lg:mt-0">
-            <h2 className="text-2xl font-serif font-bold text-[#1A1A1A] mb-6">Order summary</h2>
+            <h2 className="text-2xl font-serif text-[#1A1A1A] mb-6">Order summary</h2>
 
             <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
               <ul className="divide-y divide-gray-200 flex-col px-6">
@@ -164,11 +173,11 @@ export const CheckoutPage = () => {
                     </div>
                     <div className="ml-4 flex flex-1 flex-col">
                       <div className="flex justify-between text-sm font-medium text-gray-900">
-                        <h3 className="line-clamp-2">{item.product.title}</h3>
-                        <p className="ml-4 text-nowrap">{formatPrice(parseFloat(item.variant.price.amount) * item.quantity, item.variant.price.currencyCode)}</p>
+                        <h3 className="line-clamp-2 font-serif tracking-wide text-lg">{item.product.title}</h3>
+                        <p className="ml-4 text-nowrap font-semibold">{formatPrice(parseFloat(item.variant.price.amount) * item.quantity, item.variant.price.currencyCode)}</p>
                       </div>
-                      <p className="mt-1 text-sm text-gray-500">{item.variant.title !== 'Default Title' ? item.variant.title : ''}</p>
-                      <p className="mt-1 text-sm text-gray-500">Qty: {item.quantity}</p>
+                      <p className="mt-1 text-sm text-gray-500 font-sans">{item.variant.title !== 'Default Title' ? item.variant.title : ''}</p>
+                      <p className="mt-1 text-sm text-gray-500 font-sans">Qty: {item.quantity}</p>
                     </div>
                   </li>
                 ))}
@@ -183,9 +192,9 @@ export const CheckoutPage = () => {
                   <dt className="text-gray-600">Shipping</dt>
                   <dd>Calculated securely</dd>
                 </div>
-                <div className="flex items-center justify-between border-t border-gray-200 pt-4 text-base">
-                  <dt>Total</dt>
-                  <dd className="text-xl text-[#C0522C]">{formatPrice(cartTotal(), items[0]?.variant?.price?.currencyCode)}</dd>
+                <div className="flex items-center justify-between border-t border-gray-200 pt-4 text-lg">
+                  <dt className="font-serif font-bold tracking-widest uppercase">Total</dt>
+                  <dd className="text-xl text-[#C0522C] font-semibold">{formatPrice(cartTotal(), items[0]?.variant?.price?.currencyCode)}</dd>
                 </div>
               </dl>
 
@@ -198,6 +207,7 @@ export const CheckoutPage = () => {
           </div>
         </form>
       </div>
-    </div>
+      </div>
+    </>
   );
 };

@@ -27,6 +27,7 @@ import { WhatsAppButton } from './components/ui/WhatsAppButton';
 import { ROUTES } from './constants/routes';
 
 import { WishlistSync } from './features/wishlist/WishlistSync';
+import { CartSync } from './features/cart/CartSync';
 import { ScrollToTop } from './components/ui/ScrollToTop';
 import { LogoLoader } from './components/ui/LogoLoader';
 
@@ -50,6 +51,7 @@ const DefaultLayout = ({ children }) => (
     <Footer />
     <CartDrawer />
     <WishlistSync />
+    <CartSync />
     <WhatsAppButton />
     {/* Global Toast Container */}
     <Toaster 

@@ -12,6 +12,7 @@ export const useCart = create(
     (set, get) => ({
       items: [],
       isOpen: false,
+      lastUpdatedAt: 0,
       
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
@@ -26,15 +27,16 @@ export const useCart = create(
         if (existingItemIndex > -1) {
           const newItems = [...items];
           newItems[existingItemIndex].quantity += quantity;
-          set({ items: newItems, isOpen: true });
+          set({ items: newItems, lastUpdatedAt: Date.now() });
         } else {
-          set({ items: [...items, { product, variant, quantity }], isOpen: true });
+          set({ items: [...items, { product, variant, quantity }], lastUpdatedAt: Date.now() });
         }
       },
 
       removeFromCart: (variantId) => {
         set({
           items: get().items.filter((item) => item.variant.id !== variantId),
+          lastUpdatedAt: Date.now()
         });
       },
 
@@ -44,10 +46,13 @@ export const useCart = create(
         const newItems = get().items.map((item) =>
           item.variant.id === variantId ? { ...item, quantity } : item
         );
-        set({ items: newItems });
+        set({ items: newItems, lastUpdatedAt: Date.now() });
       },
 
-      clearCart: () => set({ items: [] }),
+      clearCart: () => set({ items: [], lastUpdatedAt: Date.now() }),
+      
+      // For syncing purposes (bypasses lastUpdatedAt so we don't trigger a push loop)
+      setCart: (newItems) => set({ items: newItems }),
 
       // Helpers
       cartTotal: () => {
@@ -71,7 +76,7 @@ export const useCart = create(
     {
       name: 'elilian-signature-cart',
       // We don't want to persist the `isOpen` state across page reloads
-      partialize: (state) => ({ items: state.items }),
+      partialize: (state) => ({ items: state.items, lastUpdatedAt: state.lastUpdatedAt }),
     }
   )
 );

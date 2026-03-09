@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { getProductByHandle } from '../../services/shopify/productsService';
 import { formatPrice } from '../../utils/formatPrice';
+import { toast } from 'react-hot-toast';
 import { Button } from '../ui/Button';
 import { LogoLoader } from '../ui/LogoLoader';
 import { useCart } from '../../features/cart/useCart';
@@ -79,6 +80,7 @@ export const QuickViewModal = ({ isOpen, onClose, productHandle }) => {
                     onClick={() => {
                        if (product.variants?.[0]?.availableForSale) {
                            addToCart(product, product.variants[0], 1);
+                           toast.success("Added to cart");
                            onClose();
                        }
                     }}
