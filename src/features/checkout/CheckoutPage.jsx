@@ -11,7 +11,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../features/cart/useCart';
 import { formatPrice } from '../../utils/formatPrice';
 import { initPaystackPayment } from '../../services/paystack/paystackService';
-import { createOrder } from '../../services/supabase/ordersService';
+import { supabase } from '../../services/supabase/client';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { ROUTES } from '../../constants/routes';
@@ -48,33 +48,41 @@ export const CheckoutPage = () => {
 
   const handleSuccess = async (response) => {
     try {
-      // If the user is logged in, save the order to their account history in Supabase
-      if (user?.id) {
-        const orderData = {
-          user_id: user.id,
-          total_amount: Math.round(cartTotal() * 100),
-          currency: 'NGN',
-          payment_provider: 'paystack',
-          payment_intent_id: response.reference || response.id || 'manual_test_ref',
-          shipping_address: shippingInfo,
-          items: items.map(item => ({
-            product_id: item.product.id,
-            variant_id: item.variant.id,
-            title: item.product.title,
-            quantity: item.quantity,
-            price: item.variant.price.amount
-          }))
-        };
-        await createOrder(orderData);
-      }
-      
+      // Call the server-side Edge Function to:
+      // 1. Verify the payment reference with Paystack API (uses secret key — never exposed to client)
+      // 2. Create the order record in Supabase
+      // 3. Send the confirmation email
+      const { data, error } = await supabase.functions.invoke('verify-and-confirm-order', {
+        body: {
+          reference: response.reference,
+          orderData: {
+            user_id: user?.id || null,
+            total_amount: Math.round(cartTotal() * 100),
+            currency: 'NGN',
+            payment_provider: 'paystack',
+            shipping_address: shippingInfo,
+            items: items.map(item => ({
+              product_id: item.product.id,
+              variant_id: item.variant.id,
+              title: item.product.title,
+              quantity: item.quantity,
+              price: item.variant.price.amount
+            }))
+          },
+          userEmail: shippingInfo.email,
+          userName: shippingInfo.fullName,
+        }
+      });
+
+      if (error) throw error;
+
       setPaymentSuccess(true);
       setShowSuccessModal(true);
       clearCart();
       toast.success('Payment successful! Your order has been placed.');
     } catch (error) {
-      console.error('Order Creation Error:', error);
-      toast.error('Payment succeeded but there was an issue linking it to your account. Please contact support.');
+      if (import.meta.env.DEV) console.error('Order Confirmation Error:', error);
+      toast.error('Payment succeeded but there was an issue confirming your order. Please contact support.');
     } finally {
       setLoading(false);
     }
@@ -124,6 +132,18 @@ export const CheckoutPage = () => {
       <div className="mx-auto max-w-7xl px-4 pt-16 pb-24 sm:px-6 lg:px-8 bg-[#FAF8F5]">
       <div className="max-w-2xl mx-auto lg:max-w-none">
         <h1 className="sr-only">Checkout</h1>
+
+        {/* Guest user notice */}
+        {!user && (
+          <div className="mb-8 rounded-lg border border-[#1B1F3B]/20 bg-[#1B1F3B]/5 p-4 flex items-start gap-3">
+            <svg className="h-5 w-5 text-[#1B1F3B] mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm text-[#1B1F3B] font-sans">
+              You're checking out as a guest. <a href={ROUTES.LOGIN} className="font-semibold underline hover:text-[#C0522C]">Sign in</a> or <a href={ROUTES.SIGNUP} className="font-semibold underline hover:text-[#C0522C]">create an account</a> to track your orders and access your order history.
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
           <div>

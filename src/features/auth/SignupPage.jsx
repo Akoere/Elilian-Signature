@@ -34,8 +34,8 @@ export const SignupPage = () => {
       return toast.error("Please fill in all fields");
     }
 
-    if (password.length < 6) {
-      return toast.error("Password must be at least 6 characters");
+    if (password.length < 8) {
+      return toast.error("Password must be at least 8 characters");
     }
 
     setLoading(true);
@@ -48,8 +48,8 @@ export const SignupPage = () => {
       toast.success("Account created successfully!");
       navigate(ROUTES.HOME);
     } catch (error) {
-      console.error("Signup Error:", error);
-      toast.error(error.message || "Failed to create account.");
+      if (import.meta.env.DEV) console.error('Signup Error:', error);
+      toast.error(error.message || 'Failed to create account.');
     } finally {
       setLoading(false);
     }

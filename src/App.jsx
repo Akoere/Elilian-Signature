@@ -20,6 +20,7 @@ const SearchPage = lazy(() => import('./features/products/SearchPage').then(m =>
 const WishlistPage = lazy(() => import('./features/wishlist/WishlistPage').then(m => ({ default: m.WishlistPage })));
 const CheckoutPage = lazy(() => import('./features/checkout/CheckoutPage').then(m => ({ default: m.CheckoutPage })));
 const OrdersPage = lazy(() => import('./features/orders/OrdersPage').then(m => ({ default: m.OrdersPage })));
+const ForgotPasswordPage = lazy(() => import('./features/auth/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage })));
 import { Navbar } from './components/ui/Navbar';
 import { Footer } from './components/ui/Footer';
 import { CartDrawer } from './components/ecommerce/CartDrawer';
@@ -82,6 +83,7 @@ function App() {
               <Route path={ROUTES.PRODUCT_DETAIL} element={<ProductDetailPage />} />
               <Route path={ROUTES.LOGIN} element={<LoginPage />} />
               <Route path={ROUTES.SIGNUP} element={<SignupPage />} />
+              <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
 
               {/* Protected Routes */}
               <Route path={ROUTES.CHECKOUT} element={<CheckoutPage />} />

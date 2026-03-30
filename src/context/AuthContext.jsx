@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
           setUser(activeSession?.user || null);
         }
       } catch (error) {
-        console.error('Failed to load session:', error);
+        if (import.meta.env.DEV) console.error('Failed to load session:', error);
       } finally {
         if (mounted) setLoading(false);
       }

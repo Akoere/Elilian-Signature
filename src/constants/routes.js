@@ -17,4 +17,5 @@ export const ROUTES = {
   ORDER_DETAIL: '/orders/:id',
   LOGIN: '/login',
   SIGNUP: '/signup',
+  FORGOT_PASSWORD: '/forgot-password',
 };

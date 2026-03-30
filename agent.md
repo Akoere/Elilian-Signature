@@ -1,5 +1,5 @@
 Production AI Development Contract
-React E-commerce Platform (Shopify + Supabase + Stripe/Paystack)
+React E-commerce Platform (Shopify + Supabase + Paystack)
 
 1. Project Identity
 
@@ -11,7 +11,7 @@ Uses Shopify for catalog/products
 
 Uses Supabase for backend (auth, DB, storage)
 
-Uses Stripe and Paystack for payment processing
+Uses Paystack for payment processing
 
 Is built and maintained by a solo developer
 

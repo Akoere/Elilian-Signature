@@ -31,8 +31,8 @@ export const LoginPage = () => {
       toast.success("Welcome back!");
       navigate(from, { replace: true });
     } catch (error) {
-      console.error("Login Error:", error);
-      toast.error(error.message || "Failed to sign in. Please check your credentials.");
+      if (import.meta.env.DEV) console.error('Login Error:', error);
+      toast.error(error.message || 'Failed to sign in. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -91,9 +91,9 @@ export const LoginPage = () => {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-[#C0522C] hover:text-[#C0522C]/80">
+                <Link to={ROUTES.FORGOT_PASSWORD} className="font-medium text-[#C0522C] hover:text-[#C0522C]/80">
                   Forgot your password?
-                </a>
+                </Link>
               </div>
             </div>
 
