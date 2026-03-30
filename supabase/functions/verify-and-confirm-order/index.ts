@@ -170,7 +170,7 @@ serve(async (req: Request): Promise<Response> => {
           <!-- CTA -->
           <div style="text-align:center;margin-bottom:16px;">
             <p style="margin:0 0 20px;font-size:15px;color:#666;font-family:'Jost', Arial, sans-serif;">Questions about your order? We're here to help.</p>
-            <a href="https://wa.me/2347000000000" style="display:inline-block;background:#25D366;color:#ffffff;text-decoration:none;padding:16px 36px;border-radius:8px;font-size:16px;font-weight:600;font-family:'Jost', Arial, sans-serif;box-shadow:0 4px 12px rgba(37,211,102,0.2);">Chat on WhatsApp</a>
+            <a href="https://wa.me/2347014759933" style="display:inline-block;background:#25D366;color:#ffffff;text-decoration:none;padding:16px 36px;border-radius:8px;font-size:16px;font-weight:600;font-family:'Jost', Arial, sans-serif;box-shadow:0 4px 12px rgba(37,211,102,0.2);">Chat on WhatsApp</a>
           </div>
         </td></tr>
         <!-- Footer -->
