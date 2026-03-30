@@ -37,20 +37,7 @@ export const ProductCard = memo(({ product }) => {
           </div>
         )}
 
-        {/* Mobile Quick View Button */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setIsQuickViewOpen(true);
-          }}
-          className="absolute bottom-3 right-3 z-10 p-1.5 md:hidden rounded-full bg-transparent border border-white/40 text-white hover:border-white/80 transition-all focus:outline-none"
-          aria-label="Quick view"
-        >
-          <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M3 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm5.5 0a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm5.5 0a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z" />
-          </svg>
-        </button>
+
       </div>
       
       {/* Wishlist Toggle Button */}

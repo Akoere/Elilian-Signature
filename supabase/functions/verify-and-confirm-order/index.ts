@@ -107,60 +107,76 @@ serve(async (req: Request): Promise<Response> => {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Order Confirmation — Elilian Signature</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap');
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f1eb;
+      font-family: 'Jost', Arial, sans-serif;
+    }
+  </style>
 </head>
-<body style="margin:0;padding:0;background:#f5f1eb;font-family:Arial,sans-serif;">
+<body>
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f1eb;padding:40px 20px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
         <!-- Header -->
         <tr><td style="background:#1B1F3B;padding:36px 40px;text-align:center;">
-          <p style="margin:0;font-family:Georgia,serif;font-size:28px;font-weight:bold;color:#ffffff;letter-spacing:3px;text-transform:uppercase;">Elilian Signature</p>
-          <p style="margin:8px 0 0;font-size:13px;color:#a0a8c8;letter-spacing:1px;">LUXURY ACCESSORIES</p>
+          <!-- Since email clients block base64, please replace VERCELLINK.COM with your actual live domain -->
+          <img src="https://elilian.shop/logo.png" alt="Elilian Signature Logo" style="height:60px;width:auto;margin-bottom:16px;object-fit:contain;" onerror="this.style.display='none'" />
+          <p style="margin:0;font-family:'Cormorant Garamond', Georgia, serif;font-size:32px;font-weight:600;color:#ffffff;letter-spacing:2px;text-transform:uppercase;">Elilian Signature</p>
+          <p style="margin:8px 0 0;font-size:13px;color:#a0a8c8;letter-spacing:1px;font-family:'Jost', Arial, sans-serif;">Handmade Luxury, crafted for you.</p>
         </td></tr>
         <!-- Confirmed Banner -->
         <tr><td style="background:#C0522C;padding:20px 40px;text-align:center;">
-          <p style="margin:0;font-size:16px;font-weight:bold;color:#ffffff;">&#10003; &nbsp; Order Confirmed</p>
+          <p style="margin:0;font-size:16px;font-weight:500;color:#ffffff;font-family:'Jost', Arial, sans-serif;">&#10003; &nbsp; Order Confirmed</p>
         </td></tr>
         <!-- Body -->
         <tr><td style="padding:40px 40px 32px;">
-          <p style="margin:0 0 8px;font-size:22px;font-family:Georgia,serif;color:#1A1A1A;">Thank you, ${userName || 'valued customer'}!</p>
-          <p style="margin:0 0 32px;font-size:14px;color:#666;line-height:1.6;">Your payment was successful and your order has been placed. We'll begin processing it right away.</p>
+          <p style="margin:0 0 8px;font-size:24px;font-family:'Cormorant Garamond', Georgia, serif;color:#1A1A1A;font-weight:600;">Thank you, ${userName || 'valued customer'}!</p>
+          <p style="margin:0 0 32px;font-size:15px;color:#666;line-height:1.6;font-family:'Jost', Arial, sans-serif;">Your payment was successful and your order has been placed. We'll begin processing it right away.</p>
           <!-- Order Ref -->
           <div style="background:#faf8f5;border:1px solid #e8e0d6;border-radius:8px;padding:16px 20px;margin-bottom:32px;">
-            <p style="margin:0;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;">Order Reference</p>
-            <p style="margin:4px 0 0;font-size:18px;font-weight:bold;color:#1B1F3B;font-family:Georgia,serif;">${reference}</p>
+            <p style="margin:0;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;font-family:'Jost', Arial, sans-serif;">Order Reference</p>
+            <p style="margin:4px 0 0;font-size:19px;font-weight:600;color:#1B1F3B;font-family:'Cormorant Garamond', Georgia, serif;">${reference}</p>
           </div>
           <!-- Items -->
-          <p style="margin:0 0 12px;font-size:14px;font-weight:bold;color:#1A1A1A;text-transform:uppercase;letter-spacing:1px;">Items Ordered</p>
-          <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:24px;">
+          <p style="margin:0 0 12px;font-size:14px;font-weight:600;color:#1A1A1A;text-transform:uppercase;letter-spacing:1px;font-family:'Jost', Arial, sans-serif;">Items Ordered</p>
+          <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:24px;font-family:'Jost', Arial, sans-serif;">
             <thead>
               <tr style="border-bottom:2px solid #1B1F3B;">
-                <th style="padding:8px 8px 12px;text-align:left;font-size:12px;color:#888;text-transform:uppercase;">Item</th>
-                <th style="padding:8px 8px 12px;text-align:center;font-size:12px;color:#888;text-transform:uppercase;">Qty</th>
-                <th style="padding:8px 8px 12px;text-align:right;font-size:12px;color:#888;text-transform:uppercase;">Price</th>
+                <th style="padding:8px 8px 12px;text-align:left;font-size:12px;color:#888;text-transform:uppercase;font-weight:500;">Item</th>
+                <th style="padding:8px 8px 12px;text-align:center;font-size:12px;color:#888;text-transform:uppercase;font-weight:500;">Qty</th>
+                <th style="padding:8px 8px 12px;text-align:right;font-size:12px;color:#888;text-transform:uppercase;font-weight:500;">Price</th>
               </tr>
             </thead>
             <tbody>${itemRows}</tbody>
             <tfoot>
               <tr>
-                <td colspan="2" style="padding:16px 8px 0;font-size:15px;font-weight:bold;color:#1A1A1A;font-family:Georgia,serif;">Total Paid</td>
-                <td style="padding:16px 8px 0;text-align:right;font-size:18px;font-weight:bold;color:#C0522C;">${totalFormatted}</td>
+                <td colspan="2" style="padding:16px 8px 0;font-size:16px;font-weight:600;color:#1A1A1A;font-family:'Cormorant Garamond', Georgia, serif;">Total Paid</td>
+                <td style="padding:16px 8px 0;text-align:right;font-size:18px;font-weight:600;color:#C0522C;">${totalFormatted}</td>
               </tr>
             </tfoot>
           </table>
           <!-- Shipping -->
-          <p style="margin:0 0 12px;font-size:14px;font-weight:bold;color:#1A1A1A;text-transform:uppercase;letter-spacing:1px;">Shipping To</p>
-          <div style="background:#faf8f5;border:1px solid #e8e0d6;border-radius:8px;padding:16px 20px;margin-bottom:32px;font-size:14px;color:#555;line-height:1.7;">
-            <strong style="color:#1A1A1A;">${shippingAddr.fullName}</strong><br>
+          <p style="margin:0 0 12px;font-size:14px;font-weight:600;color:#1A1A1A;text-transform:uppercase;letter-spacing:1px;font-family:'Jost', Arial, sans-serif;">Shipping To</p>
+          <div style="background:#faf8f5;border:1px solid #e8e0d6;border-radius:8px;padding:16px 20px;margin-bottom:40px;font-size:15px;color:#555;line-height:1.7;font-family:'Jost', Arial, sans-serif;">
+            <strong style="color:#1A1A1A;font-weight:600;">${shippingAddr.fullName}</strong><br>
             ${shippingAddr.address}<br>
             ${shippingAddr.city}, ${shippingAddr.country}<br>
             ${shippingAddr.phone}
           </div>
+          <!-- CTA -->
+          <div style="text-align:center;margin-bottom:16px;">
+            <p style="margin:0 0 20px;font-size:15px;color:#666;font-family:'Jost', Arial, sans-serif;">Questions about your order? We're here to help.</p>
+            <a href="https://wa.me/2347000000000" style="display:inline-block;background:#25D366;color:#ffffff;text-decoration:none;padding:16px 36px;border-radius:8px;font-size:16px;font-weight:600;font-family:'Jost', Arial, sans-serif;box-shadow:0 4px 12px rgba(37,211,102,0.2);">Chat on WhatsApp</a>
+          </div>
         </td></tr>
         <!-- Footer -->
-        <tr><td style="background:#1B1F3B;padding:24px 40px;text-align:center;">
-          <p style="margin:0;font-size:12px;color:#a0a8c8;">&#169; 2026 Elilian Signature. All rights reserved.</p>
-          <p style="margin:6px 0 0;font-size:11px;color:#6b7280;">You received this email because you made a purchase at our store.</p>
+        <tr><td style="background:#1B1F3B;padding:32px 40px;text-align:center;">
+          <p style="margin:0;font-size:13px;color:#a0a8c8;font-family:'Jost', Arial, sans-serif;">&#169; 2026 Elilian Signature. All rights reserved.</p>
+          <p style="margin:8px 0 0;font-size:12px;color:#6b7280;font-family:'Jost', Arial, sans-serif;">You received this email because you made a purchase at our store.</p>
         </td></tr>
       </table>
     </td></tr>
